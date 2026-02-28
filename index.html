@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SUPERKIDS Multispeciality Clinic | Pediatric Dentist</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- CSS VARIABLES --- */
+        :root {
+            --primary-blue: #0e5f9c;
+            --primary-teal: #1ca198;
+            --primary-yellow: #fba919;
+            --light-bg: #f4f9fc;
+            --text-dark: #333333;
+            --font-heading: 'Nunito', sans-serif;
+            --font-body: 'Poppins', sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: var(--font-body);
+            color: var(--text-dark);
+            background-color: #fff;
+            line-height: 1.6;
+            overflow-x: hidden; 
+        }
+
+        h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 800; }
+        a { text-decoration: none; color: inherit; }
+        ul { list-style: none; }
+
+        /* --- NAVIGATION BAR --- */
+        header {
+            background-color: #fff;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            height: 105px; 
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-container {
+            width: 100%;
+            max-width: 95%; 
+            margin: 0 auto;
+            padding: 0 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* --- SMART LOGO CROPPER --- */
+        .header-logo {
+            display: block;
+            width: 320px; 
+            height: 80px; 
+            background-image: url('logo_superkids_page-0001.jpg');
+            background-position: center center;
+            background-size: 195%; 
+            background-repeat: no-repeat;
+            flex-shrink: 0;
+        }
+
+        /* Desktop Nav Links */
+        .nav-links {
+            display: flex;
+            gap: 25px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            font-weight: 700;
+            color: var(--primary-blue);
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover { color: var(--primary-yellow); }
+
+        /* Mobile Menu Button */
+        .mobile-menu-btn {
+            display: none;
+            font-size: 2rem;
+            color: var(--primary-blue);
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+
+        /* ENLARGED APPOINTMENT BUTTON */
+        .btn-appointment {
+            background-color: var(--primary-yellow);
+            color: var(--primary-blue);
+            padding: 16px 30px;
+            border-radius: 50px;
+            font-weight: 800;
+            font-size: 1.05rem;
+            border: 2px solid var(--primary-yellow);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            box-shadow: 0 4px 10px rgba(251, 169, 25, 0.3);
+        }
+
+        .btn-appointment:hover {
+            background-color: white;
+            color: var(--primary-yellow);
+            transform: translateY(-2px);
+        }
+
+        .btn-appointment i { margin-right: 8px; font-size: 1.2rem; }
+
+        /* Mobile Menu Container */
+        .mobile-nav {
+            position: absolute;
+            top: 105px; 
+            left: 0;
+            width: 100%;
+            background: white;
+            box-shadow: 0 10px 10px rgba(0,0,0,0.1);
+            padding: 20px;
+            flex-direction: column;
+            gap: 20px;
+            display: none; 
+            border-top: 1px solid #eee;
+        }
+
+        .mobile-nav.active { display: flex; animation: slideDown 0.3s ease; }
+        .mobile-nav a { font-size: 1.1rem; font-weight: 700; color: var(--primary-blue); padding: 10px 0; border-bottom: 1px solid #f0f0f0; }
+
+        /* Dropdown */
+        .appointment-dropdown {
+            position: absolute;
+            top: 120%;
+            right: 0;
+            background: white;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            border-radius: 12px;
+            width: 260px;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            border: 1px solid #eee;
+            z-index: 1001;
+        }
+
+        .appointment-dropdown.active { display: flex; animation: fadeIn 0.3s ease; }
+
+        .contact-option {
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border-bottom: 1px solid #f0f0f0;
+            color: var(--text-dark);
+            font-size: 0.95rem;
+            transition: background 0.2s;
+        }
+        .contact-option i { color: var(--primary-teal); font-size: 1.2rem; width: 20px; }
+        .contact-option:hover { background-color: var(--light-bg); color: var(--primary-blue); }
+
+        /* --- POPUP MODAL --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            z-index: 2000; 
+            display: flex; justify-content: center; align-items: center;
+            opacity: 0; visibility: hidden; transition: all 0.4s ease;
+        }
+
+        .modal-overlay.show {
+            opacity: 1; visibility: visible;
+        }
+
+        .modal-card {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            width: 90%; max-width: 450px;
+            position: relative;
+            transform: translateY(-30px);
+            transition: all 0.4s ease;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+            text-align: center;
+            border-top: 8px solid var(--primary-teal);
+        }
+
+        .modal-overlay.show .modal-card {
+            transform: translateY(0);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px; right: 20px;
+            font-size: 1.8rem;
+            cursor: pointer;
+            color: #999;
+            transition: color 0.3s;
+            line-height: 1;
+        }
+
+        .close-btn:hover { color: var(--primary-teal); }
+
+        .modal-card h3 { color: var(--primary-blue); margin-bottom: 10px; font-size: 1.8rem; }
+        .modal-card p { color: #666; margin-bottom: 25px; font-size: 0.95rem; }
+
+        .modal-input {
+            width: 100%;
+            padding: 14px 15px;
+            margin-bottom: 15px;
+            border: 2px solid #eee;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+            background-color: var(--light-bg);
+            resize: vertical; 
+        }
+
+        .modal-input:focus { outline: none; border-color: var(--primary-teal); background-color: white;}
+
+        /* --- HERO SLIDER --- */
+        .hero { position: relative; height: 650px; overflow: hidden; }
+
+        .slide {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            opacity: 0; transition: opacity 1s ease-in-out;
+            display: flex; align-items: center; justify-content: center; text-align: center;
+        }
+        .slide.active { opacity: 1; }
+        .slide img { width: 100%; height: 100%; object-fit: cover; position: absolute; z-index: -1; filter: brightness(0.65); }
+        .slide-content { color: white; z-index: 2; max-width: 900px; padding: 20px; }
+        
+        .slide-content h2 { font-size: 4rem; margin-bottom: 1rem; text-shadow: 2px 2px 10px rgba(0,0,0,0.6); line-height: 1.1; }
+        .slide-content p { font-size: 1.6rem; margin-bottom: 2.5rem; font-weight: 500; }
+        
+        .slider-controls { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); display: flex; gap: 15px; z-index: 3; }
+        .dot { width: 14px; height: 14px; background-color: rgba(255,255,255,0.4); border-radius: 50%; cursor: pointer; }
+        .dot.active { background-color: var(--primary-yellow); transform: scale(1.3); }
+
+        /* --- SECTIONS COMMON --- */
+        .section { padding: 80px 20px; max-width: 1200px; margin: 0 auto; }
+        .section-title { text-align: center; margin-bottom: 50px; }
+        .section-title h2 { color: var(--primary-blue); font-size: 2.5rem; position: relative; display: inline-block; }
+        .section-title h2::after { content: ''; display: block; width: 50%; height: 5px; background-color: var(--primary-yellow); margin: 15px auto 0; border-radius: 10px; }
+
+        /* --- ABOUT CLINIC SECTION --- */
+        .clinic-container {
+            display: flex;
+            align-items: center;
+            gap: 50px;
+        }
+        .clinic-text { flex: 1; }
+        .clinic-text p { margin-bottom: 15px; font-size: 1.05rem; color: #444; text-align: justify; }
+        .clinic-image { flex: 1; }
+        .clinic-image img { 
+            width: 100%; 
+            border-radius: 20px; 
+            box-shadow: -15px 15px 0 var(--primary-teal); 
+            object-fit: cover;
+            height: 400px;
+        }
+        .highlight-text {
+            font-size: 1.2rem;
+            color: var(--primary-blue);
+            font-weight: 600;
+            border-left: 4px solid var(--primary-yellow);
+            padding-left: 15px;
+            margin: 25px 0;
+            font-style: italic;
+            text-align: left;
+        }
+
+        /* --- DOCTOR/FOUNDER PROFILE --- */
+        .doctor-card {
+            display: flex; gap: 60px; align-items: center;
+            background: #fff; border-radius: 25px; padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            border: 1px solid #eee;
+        }
+        .doctor-img-container { flex: 1; position: relative; min-width: 300px; }
+        .doctor-img-container img { width: 100%; border-radius: 25px; box-shadow: 20px 20px 0 var(--primary-yellow); }
+        .doctor-info { flex: 1.5; }
+        .doctor-name { color: var(--primary-blue); font-size: 2.2rem; margin-bottom: 5px; }
+        .doctor-title { color: var(--primary-teal); font-weight: 700; margin-bottom: 25px; text-transform: uppercase; letter-spacing: 1px; }
+        .doctor-desc { margin-bottom: 18px; font-size: 1.05rem; color: #444; text-align: justify; }
+        .vision-quote {
+            background-color: var(--light-bg);
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 25px;
+            color: var(--primary-blue);
+            font-weight: 700;
+            font-size: 1.1rem;
+            text-align: center;
+            border: 2px dashed var(--primary-teal);
+        }
+
+        /* --- SERVICES SECTION --- */
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 40px;
+        }
+        .service-card {
+            background: #fff;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease;
+        }
+        .service-card:hover { transform: translateY(-10px); }
+        .service-img {
+            height: 250px;
+            width: 100%;
+            object-fit: cover;
+        }
+        .service-content { padding: 30px; }
+        .service-content h3 {
+            color: var(--primary-blue);
+            font-size: 1.6rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 2px solid var(--light-bg);
+            padding-bottom: 15px;
+        }
+        .service-list li {
+            margin-bottom: 12px;
+            font-size: 1.05rem;
+            color: #555;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        .service-list li::before {
+            content: '\f058'; 
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            color: var(--primary-teal);
+            font-size: 1.1rem;
+            margin-top: 3px;
+        }
+
+        /* --- GOOGLE REVIEWS --- */
+        .reviews-section { background-color: #fff; }
+        .google-reviews-header { display: flex; align-items: center; justify-content: center; gap: 15px; margin-bottom: 40px; }
+        .google-reviews-header h2 { font-size: 2.2rem; color: #333; margin: 0; }
+        .reviews-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 30px; }
+        .review-card { background: var(--light-bg); padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #e0e0e0; display: flex; flex-direction: column; }
+        .reviewer-info { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
+        .reviewer-name { font-weight: 700; color: #333; font-size: 1.1rem; }
+        .review-date { font-size: 0.85rem; color: #777; }
+        .stars { color: #fbbc04; margin-bottom: 15px; font-size: 1.1rem; }
+        .review-text { color: #444; font-size: 1rem; line-height: 1.6; text-align: justify; }
+
+        /* --- FOOTER --- */
+        .footer-content { display: grid; gap: 30px; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
+        footer { background-color: var(--primary-blue); color: white; padding: 80px 20px 30px; }
+        .footer-col h3 { color: var(--primary-yellow); margin-bottom: 20px; font-size: 1.4rem; }
+        .footer-col p, .footer-col li { margin-bottom: 15px; color: rgba(255,255,255,0.9); display: flex; gap: 15px; align-items: start; }
+        .social-links { display: flex; gap: 15px; margin-top: 25px; }
+        .social-links a { width: 45px; height: 45px; background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 1.2rem; transition: background 0.3s; }
+        .social-links a:hover { background: var(--primary-yellow); color: var(--primary-blue); }
+        .copyright { text-align: center; padding-top: 30px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 0.9rem; opacity: 0.7; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* =========================================
+           RESPONSIVE MEDIA QUERIES
+           ========================================= */
+        
+        @media (max-width: 1024px) {
+            .nav-container { max-width: 98%; }
+            .header-logo { width: 280px; height: 70px; background-size: 195%; }
+            .nav-links { gap: 15px; }
+            .nav-links a { font-size: 0.9rem; }
+            .btn-appointment { padding: 12px 25px; font-size: 0.95rem; }
+            .doctor-card, .clinic-container { gap: 30px; padding: 30px; }
+            .doctor-img-container { min-width: 250px; }
+        }
+
+        @media (max-width: 768px) {
+            header { height: 90px; }
+            .header-logo { width: 250px; height: 65px; background-size: 195%; }
+            .mobile-nav { top: 90px; }
+            
+            .nav-links { display: none; }
+            .mobile-menu-btn { display: block; }
+            
+            .btn-appointment {
+                padding: 10px 20px;
+                font-size: 0.95rem;
+                margin-right: 10px;
+            }
+
+            .hero { height: 500px; }
+            .slide-content h2 { font-size: 2.2rem; }
+            .slide-content p { font-size: 1.1rem; }
+
+            .section { padding: 50px 20px; }
+            .doctor-card, .clinic-container { flex-direction: column; text-align: center; }
+            
+            .clinic-text p, .doctor-desc, .review-text { text-align: justify; }
+
+            .clinic-text { order: 2; }
+            .clinic-image { order: 1; width: 100%; }
+            .doctor-img-container { min-width: 100%; width: 100%; }
+            
+            .section-title h2 { font-size: 2rem; }
+            .appointment-dropdown { width: 220px; right: -20px; }
+            
+            .highlight-text { border-left: none; border-top: 4px solid var(--primary-yellow); padding-left: 0; padding-top: 15px; text-align: center; }
+        }
+
+        @media (max-width: 480px) {
+            header { height: 80px; }
+            .mobile-nav { top: 80px; }
+            .header-logo { width: 200px; height: 55px; background-size: 195%; } 
+            .btn-appointment span { display: none; } 
+            .btn-appointment::after { content: 'Book'; font-weight: 800; }
+            .btn-appointment i { margin-right: 5px; }
+            
+            .hero { height: 400px; }
+            .slide-content h2 { font-size: 1.8rem; }
+            .google-reviews-header h2 { font-size: 1.6rem; }
+            .service-img { height: 200px; }
+            .modal-card { padding: 30px 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="welcomeModal" class="modal-overlay">
+        <div class="modal-card">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <h3>Welcome to Superkids!</h3>
+            <p>Leave your details below and our team will get back to you to schedule an appointment.</p>
+            
+            <form action="https://formsubmit.co/superkidsmultispeciality@gmail.com" method="POST">
+                
+                <input type="hidden" name="_captcha" value="false">
+
+                <input type="text" name="Patient Name" class="modal-input" placeholder="Your Full Name" required>
+                <input type="tel" name="Phone Number" class="modal-input" placeholder="Your Phone Number" required>
+                <input type="email" name="Email Address" class="modal-input" placeholder="Your Email Address" required>
+                
+                <textarea name="Message or Query" class="modal-input" placeholder="Any questions or queries? (Optional)" rows="3"></textarea>
+                
+                <button type="submit" class="btn-appointment" style="width: 100%; margin-top: 5px; font-size: 1.1rem;">
+                    Submit Details
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <header>
+        <div class="nav-container">
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+
+            <a href="#" class="header-logo" aria-label="SUPERKIDS Home"></a>
+            
+            <ul class="nav-links">
+                <li><a href="#clinic">About Clinic</a></li>
+                <li><a href="#founder">Our Founder</a></li>
+                <li><a href="#services">Services</a></li>
+                <li><a href="#reviews">Reviews</a></li>
+            </ul>
+
+            <div style="position: relative;">
+                <button class="btn-appointment" onclick="toggleDropdown()">
+                    <i class="fa-solid fa-calendar-check"></i> <span>Book Appointment</span>
+                </button>
+                <div class="appointment-dropdown" id="aptDropdown">
+                    <a href="tel:+919826020000" class="contact-option">
+                        <i class="fa-solid fa-phone"></i> Call Clinic
+                    </a>
+                    <a href="mailto:superkidsmultispeciality@gmail.com" class="contact-option">
+                        <i class="fa-solid fa-envelope"></i> Send Email
+                    </a>
+                    <a href="https://wa.me/919826020000" class="contact-option">
+                        <i class="fa-brands fa-whatsapp"></i> WhatsApp
+                    </a>
+                    <a href="#footer" class="contact-option">
+                        <i class="fa-solid fa-map-location-dot"></i> View Location
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mobile-nav" id="mobileNav">
+            <a href="#clinic" onclick="toggleMobileMenu()">About Clinic</a>
+            <a href="#founder" onclick="toggleMobileMenu()">Our Founder</a>
+            <a href="#services" onclick="toggleMobileMenu()">Services</a>
+            <a href="#reviews" onclick="toggleMobileMenu()">Reviews</a>
+        </div>
+    </header>
+
+    <section class="hero" id="home">
+        <div class="slide active">
+            <img src="https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80" alt="Happy Kid">
+            <div class="slide-content">
+                <h2>Big Smiles for Little Faces</h2>
+                <p>Nurturing happy, healthy smiles.</p>
+            </div>
+        </div>
+        <div class="slide">
+            <img src="https://images.unsplash.com/photo-1606811841689-23dfddce3e95?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80" alt="Dental Toy">
+            <div class="slide-content">
+                <h2>Fear-Free Dentistry</h2>
+                <p>Specialized pediatric care.</p>
+            </div>
+        </div>
+        <div class="slide">
+            <img src="https://images.unsplash.com/photo-1596952216664-50268579d482?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80" alt="Smiling Child">
+            <div class="slide-content">
+                <h2>Prevention is Better</h2>
+                <p>Building a lifetime of oral health.</p>
+            </div>
+        </div>
+
+        <div class="slider-controls">
+            <div class="dot active" onclick="setSlide(0)"></div>
+            <div class="dot" onclick="setSlide(1)"></div>
+            <div class="dot" onclick="setSlide(2)"></div>
+        </div>
+    </section>
+
+    <section id="clinic" class="section" style="background-color: var(--light-bg);">
+        <div class="section-title">
+            <h2>About Superkids Clinic</h2>
+        </div>
+        <div class="clinic-container">
+            <div class="clinic-text">
+                <p>Recognised as one of Central India’s finest child and family focused dental and healthcare destinations, <strong>Superkids Multispeciality Clinic</strong> is not a conventional clinic — it is a thoughtfully designed healthcare experience.</p>
+                
+                <p>Built to redefine pediatric and family dentistry, we specialise in fear-free dentistry for both children and adults, creating an atmosphere where comfort replaces anxiety. Our advanced <strong>central-line laughing gas (nitrous oxide)</strong> sedation system ensures safe, controlled, and stress-free treatments.</p>
+                
+                <p>Every detail reflects intention — from a dedicated <strong>play area</strong>, a proper sterlization room and balcony-view dental chairs to <strong>ceiling-mounted televisions</strong> that gently distract young patients during procedures.</p>
+                
+                <p>We combine trust-driven care, the latest technology, and advanced digital dentistry to deliver precise, efficient, and high-quality treatments in a warm, refined environment.</p>
+
+                <div class="highlight-text">
+                    "At Superkids, we are not just providing treatment — we are setting new benchmarks in healthcare across Central India."
+                </div>
+            </div>
+            <div class="clinic-image">
+                <img src="https://images.unsplash.com/photo-1629909613654-28e377c37b09?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80" alt="Modern Dental Clinic Interior">
+            </div>
+        </div>
+    </section>
+
+    <section id="founder" class="section">
+        <div class="section-title">
+            <h2>About our Founder</h2>
+        </div>
+        <div class="doctor-card">
+            <div class="doctor-img-container">
+                <img src="templatejpeg.jpeg" alt="Dr. Simran Chhorwani">
+            </div>
+            <div class="doctor-info">
+                <h3 class="doctor-name">Dr. Simran Chhorwani</h3>
+                <p class="doctor-title">Founder | BDS, MDS (Pediatric & Preventive Dentistry)</p>
+                
+                <p class="doctor-desc">
+                    I am Dr. Simran Chhorwani, a pediatric dentist based in Indore with a passion for delivering compassionate and child-centered care. I completed my graduation from Modern Dental College & Research Centre, Indore, and pursued my postgraduation at Sri Aurobindo College of Dentistry, Indore, where I refined my clinical expertise and patient-focused approach.
+                </p>
+                <p class="doctor-desc">
+                    To expand my aesthetic perspective, I completed a Smile Designing course under the guidance of the respected father of modern dentistry, Dr. Sandesh Mayekar, and gained valuable clinical exposure practicing briefly with Dr. Rohan Bhatt in Ahmedabad.
+                </p>
+                <p class="doctor-desc">
+                    Beyond dentistry, I am the Founder of <strong>Superkids by Dr. Simran</strong> and Host of <strong>The Healing Hour with Dr. Simran</strong>, platforms dedicated to making healthcare conversations more approachable, meaningful, and impactful.
+                </p>
+
+                <div class="vision-quote">
+                    "My vision is simple—to create healthier lives and a million confident smiles that truly come from the heart."
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="services" class="section" style="background-color: var(--light-bg);">
+        <div class="section-title">
+            <h2>About Our Services</h2>
+        </div>
+        <div class="services-grid">
+            
+            <div class="service-card">
+                <img src="https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Kids Dentistry Services" class="service-img">
+                <div class="service-content">
+                    <h3>🦷 Kids Dentistry</h3>
+                    <ul class="service-list">
+                        <li>Teeth eruption concerns (birth to adolescence)</li>
+                        <li>Preventive dental care & routine check-ups</li>
+                        <li>Early age orthodontics & growth guidance</li>
+                        <li>Root canal treatment (milk & young permanent teeth)</li>
+                        <li>Pediatric crowns</li>
+                        <li>Special care dentistry</li>
+                        <li>Invisalign / Clear aligners for teens</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="service-card">
+                <img src="https://images.unsplash.com/photo-1537368910025-700350fe46c7?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Adult Dentistry Services" class="service-img">
+                <div class="service-content">
+                    <h3>😁 Adult Dentistry</h3>
+                    <ul class="service-list">
+                        <li>Root canal treatment</li>
+                        <li>Dental implants</li>
+                        <li>Teeth whitening</li>
+                        <li>Smile designing</li>
+                        <li>Laser dentistry</li>
+                        <li>Digital dentistry</li>
+                        <li>Braces & clear aligners</li>
+                        <li>Crowns, bridges & dentures</li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <section id="reviews" class="section reviews-section">
+        <div class="google-reviews-header">
+            <h2>Google Reviews</h2>
+        </div>
+        
+        <div class="reviews-grid">
+            <div class="review-card">
+                <div class="reviewer-info">
+                    <div>
+                        <div class="reviewer-name">Anjali P.</div>
+                        <div class="review-date">2 weeks ago</div>
+                    </div>
+                </div>
+                <div class="stars">
+                    <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                </div>
+                <p class="review-text">"Dr. Simran is magical! My son used to be terrified of dentists, but she made it so fun. The clinic atmosphere is amazing for kids."</p>
+            </div>
+
+            <div class="review-card">
+                <div class="reviewer-info">
+                    <div>
+                        <div class="reviewer-name">Rahul M.</div>
+                        <div class="review-date">1 month ago</div>
+                    </div>
+                </div>
+                <div class="stars">
+                    <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                </div>
+                <p class="review-text">"The clinic is so colorful and the team is very patient. Best pediatric clinic in the city. Highly recommend for any parents."</p>
+            </div>
+
+            <div class="review-card">
+                <div class="reviewer-info">
+                    <div>
+                        <div class="reviewer-name">Sneha K.</div>
+                        <div class="review-date">3 months ago</div>
+                    </div>
+                </div>
+                <div class="stars">
+                    <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                </div>
+                <p class="review-text">"Very professional and clean. Explained everything clearly about the cavity treatment. My daughter didn't cry at all!"</p>
+            </div>
+        </div>
+    </section>
+
+    <footer id="footer">
+        <div class="footer-content">
+            <div class="footer-col">
+                <h3>SUPERKIDS Multispeciality Clinic</h3>
+                <p>Nurturing happy smiles in a fun, safe, and professional environment.</p>
+                <div class="social-links">
+                    <a href="https://www.instagram.com/superkidsbydrsimran?igsh=MW1xZ3VpOWFmZXBmaA%3D%3D&utm_source=qr" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="https://www.facebook.com/share/1C8qhSsX23/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-facebook-f"></i></a>
+                    <a href="https://youtube.com/@drsimranchhorwani?si=UxVteo_lyxwOmj24" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-youtube"></i></a>
+                </div>
+            </div>
+            <div class="footer-col">
+                <h3>Contact Us</h3>
+                <p><i class="fa-solid fa-location-dot"></i> 410, 411, 4th floor, The One 40 building, Greater Brijeshwari, Scheme 140, Indore, 452016</p>
+                <p><i class="fa-solid fa-phone"></i> +91 98260-20000</p>
+                <p><i class="fa-solid fa-envelope"></i> superkidsmultispeciality@gmail.com</p>
+            </div>
+            <div class="footer-col">
+                <h3>Opening Hours</h3>
+                <ul>
+                    <li><span>Monday - Saturday:</span> <span>11:00 AM - 08:00 PM</span></li>
+                </ul>
+            </div>
+        </div>
+        <div class="copyright">
+            <p>&copy; 2026 SUPERKIDS Multispeciality Clinic.</p>
+        </div>
+    </footer>
+
+    <script>
+        // --- Modal Popup Logic ---
+        window.addEventListener('load', function() {
+            // Show modal 1.5 seconds after page loads
+            setTimeout(function() {
+                document.getElementById('welcomeModal').classList.add('show');
+            }, 1500); 
+        });
+
+        function closeModal() {
+            document.getElementById('welcomeModal').classList.remove('show');
+        }
+
+        // --- Mobile Menu Logic ---
+        function toggleMobileMenu() {
+            const nav = document.getElementById('mobileNav');
+            nav.classList.toggle('active');
+        }
+
+        // --- Carousel Logic ---
+        let slideIndex = 0;
+        const slides = document.querySelectorAll('.slide');
+        const dots = document.querySelectorAll('.dot');
+        const intervalTime = 5000;
+
+        function showSlide(n) {
+            slides.forEach(slide => slide.classList.remove('active'));
+            dots.forEach(dot => dot.classList.remove('active'));
+            slideIndex = n;
+            if (slideIndex >= slides.length) slideIndex = 0;
+            if (slideIndex < 0) slideIndex = slides.length - 1;
+            slides[slideIndex].classList.add('active');
+            dots[slideIndex].classList.add('active');
+        }
+
+        function nextSlide() { showSlide(slideIndex + 1); }
+        function setSlide(n) { showSlide(n); clearInterval(slideInterval); slideInterval = setInterval(nextSlide, intervalTime); }
+        let slideInterval = setInterval(nextSlide, intervalTime);
+
+        // --- Dropdown Logic ---
+        function toggleDropdown() {
+            const dropdown = document.getElementById('aptDropdown');
+            dropdown.classList.toggle('active');
+        }
+
+        // Close dropdowns/menus when clicking outside
+        window.onclick = function(event) {
+            // Close Book Appointment dropdown
+            if (!event.target.matches('.btn-appointment') && !event.target.closest('.btn-appointment')) {
+                const dropdowns = document.getElementsByClassName("appointment-dropdown");
+                for (let i = 0; i < dropdowns.length; i++) {
+                    if (dropdowns[i].classList.contains('active')) {
+                        dropdowns[i].classList.remove('active');
+                    }
+                }
+            }
+            // Close mobile menu
+            if (!event.target.closest('header')) {
+                const mobileNav = document.getElementById('mobileNav');
+                if (mobileNav.classList.contains('active')) {
+                    mobileNav.classList.remove('active');
+                }
+            }
+            // Close modal if clicking outside the card
+            const modal = document.getElementById('welcomeModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+    </script>
+</body>
+</html>
